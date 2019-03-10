@@ -11,7 +11,7 @@ int main() {
         bst.put(i, i);
     }
     for(size_t i = 0; i < 10; i++) {
-        bst.delNode(i);
+        bst.del(i);
     }
     // bst.put(0, 0);
     // bst.put(-4, 0);
@@ -27,7 +27,7 @@ int main() {
         rbt.put(i, i);
     }
     for(size_t i = 0; i < 10; i++) {
-        rbt.delNode(i);
+        rbt.del(i);
     }
     // rbt.put(0, 0);
     // rbt.put(-4, 0);
@@ -42,7 +42,7 @@ int main() {
         spt.put(i, i);
     }
     for(size_t i = 0; i < 10; i++) {
-        spt.delNode(i);
+        spt.del(i);
     }
     // spt.put(0, 0);
     // spt.put(-4, 0);

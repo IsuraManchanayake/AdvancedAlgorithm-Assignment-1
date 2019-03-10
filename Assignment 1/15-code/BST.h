@@ -5,169 +5,193 @@
 using std::cout;
 using std::endl;
 
-struct BST {
-    struct Node {
-        int key;
-        int val;
-        Node* left;
-        Node* right;
-        size_t size;
-
-        Node(int key, int val, size_t size)
-            : key(key), val(val), size(size), left(nullptr), right(nullptr) {}
-    };
-
+class BST {
+public:
+    BST();
+    size_t height();
+    bool isEmpty(void) const;
+    size_t size(void) const;
+    bool contains(int key) const;
+    int get(int key) const;
+    void put(int key, int val);
+    void deleteMin(void);
+    void deleteMax(void);
+    void del(int key);
+    int min(void);
+    int max(void);
+private:
+    class Node;
     Node* root;
+    size_t size(Node* x) const;
+    Node* get(Node* x, int key) const;
+    Node* put(Node* x, int key, int val);
+    Node* deleteMin(Node* x);
+    Node* deleteMax(Node* x);
+    Node* del(Node* x, int key);
+    Node* minNode(Node* x);
+    Node* maxNode(Node* x);
+    size_t height(Node* x);
+};
+
+struct BST::Node {
+    int key;
+    int val;
+    Node* left;
+    Node* right;
+    size_t size;
+
+    Node(int key, int val, size_t size)
+        : key(key), val(val), size(size), left(nullptr), right(nullptr) {}
+};
     
-    BST() { root = nullptr; }
+BST::BST() : root(nullptr) {}
 
-    bool isEmpty(void) const {
-        return size() == 0;
+bool BST::isEmpty(void) const {
+    return size() == 0;
+}
+
+size_t BST::size(void) const {
+    return size(root);
+}
+
+size_t BST::size(Node* x) const {
+    if(x == nullptr) return 0;
+    return x->size;
+}
+
+bool BST::contains(int key) const {
+    return get(root, key) != nullptr;
+}
+
+int BST::get(int key) const {
+    Node* n = get(root, key);
+    if(n == nullptr) throw std::runtime_error("key not found"); 
+    return n->val;
+}
+
+BST::Node* BST::get(Node* x, int key) const {
+    if(x == nullptr) return nullptr;
+    if(key < x->key) return get(x->left, key);
+    else if(key > x->key) return get(x->right, key);
+    return x;
+}
+
+void BST::put(int key, int val) {
+    root = put(root, key, val);
+}
+
+BST::Node* BST::put(Node* x, int key, int val) {
+    if(x == nullptr) return new Node(key, val, 1);
+    if(key < x->key) {
+        x->left = put(x->left, key, val);
+    } else if(key > x->key) {
+        x->right = put(x->right, key, val);
+    } else {
+        x->val = val;
     }
+    x->size = 1 + size(x->left) + size(x->right);
+    return x;
+}
 
-    size_t size(void) const {
-        return size(root);
+void BST::deleteMin(void) {
+    if(isEmpty()) {
+        throw new std::runtime_error("Empty tree");
     }
+    root = deleteMin(root);
+}
 
-    size_t size(Node* x) const {
-        if(x == nullptr) return 0;
-        return x->size;
+BST::Node* BST::deleteMin(Node* x) {
+    if(x->left == nullptr) {
+        Node* right = x->right;
+        delete x;
+        return right;
     }
+    x->left = deleteMin(x->left);
+    x->size = size(x->left) + size(x->right) + 1;
+    return x;
+}
 
-    bool contains(int key) const {
-        return get(root, key) != nullptr;
+void BST::deleteMax(void) {
+    if(isEmpty()) {
+        throw new std::runtime_error("Empty tree");
     }
+    root = deleteMax(root);
+}
 
-    int get(int key) const {
-        Node* n = get(root, key);
-        if(n == nullptr) throw std::runtime_error("key not found"); 
-        return n->val;
+BST::Node* BST::deleteMax(Node* x) {
+    if(x->right == nullptr) {
+        Node* left = x->left;
+        delete x;
+        return left;
     }
+    x->right = deleteMax(x->right);
+    x->size = size(x->left) + size(x->right) + 1;
+    return x;
+}
 
-    Node* get(Node* x, int key) const {
-        if(x == nullptr) return nullptr;
-        if(key < x->key) return get(x->left, key);
-        else if(key > x->key) return get(x->right, key);
-        return x;
+void BST::del(int key) {
+    root = del(root, key);
+}
+
+BST::Node* BST::del(Node* x, int key) {
+    if(x == nullptr) {
+        return nullptr;
     }
-
-    void put(int key, int val) {
-        root = put(root, key, val);
-    }
-
-    Node* put(Node* x, int key, int val) {
-        if(x == nullptr) return new Node(key, val, 1);
-        if(key < x->key) {
-            x->left = put(x->left, key, val);
-        } else if(key > x->key) {
-            x->right = put(x->right, key, val);
-        } else {
-            x->val = val;
-        }
-        x->size = 1 + size(x->left) + size(x->right);
-        return x;
-    }
-
-    void deleteMin(void) {
-        if(isEmpty()) {
-            throw new std::runtime_error("Empty tree");
-        }
-        root = deleteMin(root);
-    }
-
-    Node* deleteMin(Node* x) {
-        if(x->left == nullptr) {
-            Node* right = x->right;
-            delete x;
-            return right;
-        }
-        x->left = deleteMin(x->left);
-        x->size = size(x->left) + size(x->right) + 1;
-        return x;
-    }
-
-    void delteMax(void) {
-        if(isEmpty()) {
-            throw new std::runtime_error("Empty tree");
-        }
-        root = delteMax(root);
-    }
-
-    Node* delteMax(Node* x) {
+    if(key < x->key) {
+        x->left = del(x->left, key);
+    } else if(key > x->key) {
+        x->right = del(x->right, key);
+    } else {
         if(x->right == nullptr) {
             Node* left = x->left;
             delete x;
             return left;
         }
-        x->right = delteMax(x->right);
-        x->size = size(x->left) + size(x->right) + 1;
-        return x;
-    }
-
-    void delNode(int key) {
-        root = delNode(root, key);
-    }
-
-    Node* delNode(Node* x, int key) {
-        if(x == nullptr) {
-            return nullptr;
-        }
-        if(key < x->key) {
-            x->left = delNode(x->left, key);
-        } else if(key > x->key) {
-            x->right = delNode(x->right, key);
-        } else {
-            if(x->right == nullptr) {
-                Node* left = x->left;
-                delete x;
-                return left;
-            }
-            if(x->left == nullptr) {
-                Node* right = x->right;
-                delete x;
-                return right;
-            }
-            Node* t = x;
-            x = minNode(t->right);
-            x->right = deleteMin(t->right);
-            x->left = t->left;
-        }
-        x->size = size(x->left) + size(x->right) + 1;
-        return x;
-    }
-
-    int min(void) {
-        return minNode(root)->key;
-    }
-
-    Node* minNode(Node* x) {
         if(x->left == nullptr) {
-            return x;
+            Node* right = x->right;
+            delete x;
+            return right;
         }
-        return minNode(x->left);
+        Node* t = x;
+        x = minNode(t->right);
+        x->right = deleteMin(t->right);
+        x->left = t->left;
     }
+    x->size = size(x->left) + size(x->right) + 1;
+    return x;
+}
 
-    int max(void) {
-        return maxNode(root)->key;
-    }
+int BST::min(void) {
+    return minNode(root)->key;
+}
 
-    Node* maxNode(Node* x) {
-        if(x->right == nullptr) {
-            return x;
-        }
-        return maxNode(x->right);
+BST::Node* BST::minNode(Node* x) {
+    if(x->left == nullptr) {
+        return x;
     }
+    return minNode(x->left);
+}
 
-    size_t height() {
-        return height(root);
-    }
+int BST::max(void) {
+    return maxNode(root)->key;
+}
 
-    size_t height(Node* x) {
-        if(x == nullptr) {
-            return 0;
-        }
-        size_t left_h = height(x->left) + 1;
-        size_t right_h = height(x->right) + 1;
-        return left_h < right_h ? right_h : left_h;
+BST::Node* BST::maxNode(Node* x) {
+    if(x->right == nullptr) {
+        return x;
     }
-};
+    return maxNode(x->right);
+}
+
+size_t BST::height() {
+    return height(root);
+}
+
+size_t BST::height(Node* x) {
+    if(x == nullptr) {
+        return 0;
+    }
+    size_t left_h = height(x->left) + 1;
+    size_t right_h = height(x->right) + 1;
+    return left_h < right_h ? right_h : left_h;
+}
