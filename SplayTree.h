@@ -9,6 +9,7 @@ public:
     void del(int key);
     size_t height(void) const;
     size_t size(void) const;
+    void print_in_order(void) const;
 private:
     struct Node;
     Node* root;
@@ -18,6 +19,7 @@ private:
     Node* rotateLeft(Node* h);
     size_t height(Node* x) const;
     size_t size(Node* x) const;
+    void print_in_order(Node* x) const;
 };
 
 struct SplayTree::Node {
@@ -165,4 +167,17 @@ SplayTree::Node* SplayTree::rotateLeft(Node* h) {
     h->right = x->left;
     x->left = h;
     return x;
+}
+
+void SplayTree::print_in_order(void) const {
+    print_in_order(root);
+    std::cout << '\n';
+}
+
+void SplayTree::print_in_order(Node* x) const {
+    if(x != nullptr) {
+        print_in_order(x->left);
+        std::cout << x->key << ' ';
+        print_in_order(x->right);
+    }
 }

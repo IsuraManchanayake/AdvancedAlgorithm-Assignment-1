@@ -15,6 +15,7 @@ public:
     size_t height(void) const;
     int minNode(void) const;
     int maxNode(void) const;
+    void print_in_order(void) const;
 private:
     enum class Color;
     struct Node;
@@ -36,6 +37,7 @@ private:
     size_t height(Node* x) const;
     Node* minNode(Node* x) const;
     Node* maxNode(Node* x) const;
+    void print_in_order(Node* x) const;
 };
 
 enum class RBTree::Color {
@@ -323,4 +325,17 @@ RBTree::Node* RBTree::maxNode(Node* x) const {
         return x;
     } 
     return maxNode(x->right);
+}
+
+void RBTree::print_in_order(void) const {
+    print_in_order(root);
+    std::cout << '\n';
+}
+
+void RBTree::print_in_order(Node* x) const {
+    if(x != nullptr) {
+        print_in_order(x->left);
+        std::cout << x->key << ' ';
+        print_in_order(x->right);
+    }
 }

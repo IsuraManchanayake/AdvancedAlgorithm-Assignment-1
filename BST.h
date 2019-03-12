@@ -19,8 +19,9 @@ public:
     void del(int key);
     int min(void);
     int max(void);
+    void print_in_order(void) const;
 private:
-    class Node;
+    struct Node;
     Node* root;
     size_t size(Node* x) const;
     Node* get(Node* x, int key) const;
@@ -31,6 +32,7 @@ private:
     Node* minNode(Node* x);
     Node* maxNode(Node* x);
     size_t height(Node* x);
+    void print_in_order(Node* x) const;
 };
 
 struct BST::Node {
@@ -194,4 +196,17 @@ size_t BST::height(Node* x) {
     size_t left_h = height(x->left) + 1;
     size_t right_h = height(x->right) + 1;
     return left_h < right_h ? right_h : left_h;
+}
+
+void BST::print_in_order(void) const {
+    print_in_order(root);
+    cout << '\n';
+}
+
+void BST::print_in_order(Node* x) const {
+    if(x != nullptr) {
+        print_in_order(x->left);
+        cout << x->key << ' ';
+        print_in_order(x->right);
+    }
 }
