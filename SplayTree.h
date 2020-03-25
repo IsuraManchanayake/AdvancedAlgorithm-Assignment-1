@@ -14,6 +14,8 @@ private:
     struct Node;
     Node* root;
     Node* get(int key);
+    Node* put(Node* x, int key, int val);
+    Node* del(Node* x, int key);
     Node* splay(Node* h, int key);
     Node* rotateRight(Node* h);
     Node* rotateLeft(Node* h);
@@ -47,43 +49,53 @@ SplayTree::Node* SplayTree::get(int key) {
 }
 
 void SplayTree::put(int key, int val) {
-    if(root == nullptr) {
-        root = new Node(key, val);
-        return;
+    root = put(root, key, val);
+}
+
+SplayTree::Node* SplayTree::put(Node* x, int key, int val) {
+    if (x == nullptr) {
+        return new Node(key, val);
     }
-    root = splay(root, key);
-    if(key < root->key) {
-        Node* n = new Node(key, val);
-        n->left = root->left;
-        n->right = root;
-        root->left = nullptr;
-        root = n;
-    } else if(key > root->key) {
-        Node* n = new Node(key, val);
-        n->right = root->right;
-        n->left = root;
-        root->right = nullptr;
-        root = n;
+    x = splay(x, key);
+    if (x->key == key)  {
+        return x;
+    }
+    Node* n = new Node(key, val);
+    if (x->key > key) {
+        n->right = x;
+        n->left = x->left;
+        x->left = nullptr;
     } else {
-        root->val = val;
+        n->left = x;
+        n->right = x->right;
+        x->right = nullptr;
     }
+    return n;
 }
 
 void SplayTree::del(int key) {
-    if(root == nullptr) {
-        return;
+    root = del(root, key);
+}
+
+SplayTree::Node* SplayTree::del(Node* x, int key) {
+    Node* t = nullptr;
+    if (x == nullptr) {
+        return nullptr;
     }
-    root = splay(root, key);
-    if(key == root->key) {
-        if(root->left == nullptr) {
-            root = root->right;
-        } else {
-            Node* x = root->right;
-            root = root->left;
-            splay(root, key);
-            root->right = x;
-        }
+    x = splay(x, key);
+    if (key != x->key) {
+        return x;
     }
+    if (x->left == nullptr) {
+        t = x;
+        x = x->right;
+    } else {
+        t = x;
+        x = splay(x->left, key);
+        x->right = t->right;
+    }
+    delete t;
+    return x;
 }
 
 SplayTree::Node* SplayTree::splay(Node* h, int key) {

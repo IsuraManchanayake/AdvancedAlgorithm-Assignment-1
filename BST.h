@@ -154,10 +154,9 @@ BST::Node* BST::del(Node* x, int key) {
             delete x;
             return right;
         }
-        Node* t = x;
-        x = minNode(t->right);
-        x->right = deleteMin(t->right);
-        x->left = t->left;
+        Node *t = minNode(x->right);
+        x->key = t->key;
+        x->right = del(x->right, t->key);
     }
     x->size = size(x->left) + size(x->right) + 1;
     return x;
